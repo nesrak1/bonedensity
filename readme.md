@@ -4,13 +4,13 @@ See writeup which started this: https://nesrak1.github.io/2022/11/13/flareon09-1
 
 ```
 python bd.py encrypted_file.pyc _pytransform.dll
-python bd.py encrypted_file.pyc pytransform.pyc
+python bd.py encrypted_file.pyc pytransform.pyd
 ```
 
-Use the pytransform.pyc file if you have it,
+Use the pytransform.pyd file if you have it,
 otherwise, use the _pytransform.dll version.
 
-Note: only windows dlls/pycs are supported right now.
+Note: only windows dlls/pyds are supported right now.
 
 If you're on Linux, you'll need to compile tomcrypt_ctr (normal mode only).
 This is temporary measure since pycryptodome wasn't working.
