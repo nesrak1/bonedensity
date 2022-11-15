@@ -3,7 +3,7 @@ from unscramble import correct_py_bytecode, unscramble_opcode_mixer
 from util import read_mem_u32, write_mem_u32, get_zoombie
 from pyarmorvm_code import decode_key_and_iv
 from pycfile import get_pyarmor_bytes
-from code_fix import CodeFixer
+from code_fix import CodeFixer, CodeFixerSuper
 from Crypto.Cipher import AES
 from enums import DecodeMode
 import importlib
@@ -33,52 +33,14 @@ class Decoder():
         pyarmor_bytes = self.decode_pyarmor_bytes(pyarmor_bytes_enc, pyarmor_bytes_key, pyarmor_bytes_nonce)
 
         if self.mode == DecodeMode.SuperMode:
-            pyarmor_marshal = marshal.loads(pyarmor_bytes)
-
-            armor_wrap_code = pyarmor_marshal[0]
-            armor_wrap_co_code = armor_wrap_code.co_code[16:-16]
-            armor_wrap_key = armor_wrap_code.co_code[-16:]
-            armor_wrap_flags = armor_wrap_code.co_flags
-            armor_wrap_co_consts = pyarmor_marshal[1]
-
-            # there is a second mode possible, only one is implemented here
-            armor_wrap_co_code_fix = decrypt_buffer_block(armor_wrap_co_code, product_key_key[0x32:], armor_wrap_key, False)
-            
             zoombie = get_zoombie(product_key_key, product_key_iv)
-            new_mixer = unscramble_opcode_mixer(zoombie)
-
-            correct_py_bytecode(new_mixer, armor_wrap_co_code_fix)
-
-            flags = armor_wrap_flags
-            flags &= ~(0x40000000 | 0x20000000 | 0x8000000)
-            if sys.hexversion < 0x3080000:
-                code_c = type(armor_wrap_code)
-                armor_wrap_code = code_c(
-                    armor_wrap_code.co_argcount,
-                    armor_wrap_code.co_kwonlyargcount,
-                    armor_wrap_code.co_nlocals,
-                    armor_wrap_code.co_stacksize,
-                    flags,
-                    bytes(armor_wrap_co_code_fix),
-                    tuple(armor_wrap_co_consts),
-                    armor_wrap_code.co_names,
-                    armor_wrap_code.co_varnames,
-                    armor_wrap_code.co_filename,
-                    armor_wrap_code.co_name,
-                    armor_wrap_code.co_firstlineno,
-                    armor_wrap_code.co_lnotab,
-                    armor_wrap_code.co_freevars,
-                    armor_wrap_code.co_cellvars
-                )
-            else:
-                armor_wrap_code = armor_wrap_code.replace(
-                    co_code=armor_wrap_co_code_fix,
-                    co_flags=flags,
-                    co_consts=tuple(armor_wrap_co_consts)
-                )
+            code_fixer = CodeFixerSuper(product_key_key, product_key_iv, zoombie)
             
-            armor_wrap_pyc = importlib._bootstrap_external._code_to_timestamp_pyc(armor_wrap_code) # type: ignore
+            pyarmor_marshal = marshal.loads(pyarmor_bytes)
+            pyarmor_marshal_fix = code_fixer.deobfusc_codeobj_first(pyarmor_marshal)
 
+            armor_wrap_pyc = importlib._bootstrap_external._code_to_timestamp_pyc(pyarmor_marshal_fix) # type: ignore
+            
             fix_pyc_filename = sys.argv[1] + ".fix.pyc"
             self.write_pyc(armor_wrap_pyc, fix_pyc_filename)
             self.decompile_pyc(fix_pyc_filename)

@@ -8,10 +8,10 @@ def main():
         print("usage:")
         print("  python bd.py encrypted_file.pyc _pytransform.dll")
         print("  python bd.py encrypted_file.pyc pytransform.pyd")
-        print("    use the pytransform.pyc file if you have it,")
+        print("    use the pytransform.pyd file if you have it,")
         print("    otherwise, use the _pytransform.dll version.")
         print("")
-        print("note: only windows dlls/pycs are supported right now.")
+        print("note: only windows dlls/pyds are supported right now.")
         exit(1)
     
     pyc_path = sys.argv[1]
