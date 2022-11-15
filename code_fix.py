@@ -74,7 +74,7 @@ class CodeFixer():
             if flags & 0x2000000:
                 print("decoding mode 1...")
                 code = decrypt_buffer_block(enc[:-16], self.key[0x32:0x4a], code[-16:], True)
-                code = self.fix_code(code, sbeg, og_code[-send-16:-16])
+                code = self.fix_code(code, 16, og_code[-send-16:-16])
             else:
                 print("decoding mode 2...")
                 code = decrypt_buffer_basic_xor(enc, self.key[0x32:0x4a])
@@ -83,7 +83,7 @@ class CodeFixer():
             if flags & 0x2000000:
                 print("decoding mode 3...")
                 code = decrypt_buffer_block(enc[:-16], self.key[0x32:0x4a], code[-16:], False)
-                code = self.fix_code(code, sbeg, og_code[-send-16:-16])
+                code = self.fix_code(code, 16, og_code[-send-16:-16])
             else:
                 print("decoding mode 4...")
                 code = decrypt_des(enc, self.key[0x32:0x4a], self.iv, False)
@@ -133,14 +133,14 @@ class CodeFixer():
         if flags & 0x8000000:
             if flags & 0x2000000:
                 print("decoding mode 7...")
-                code = decrypt_ctr(enc[:-16], self.key[0x19:0x29], code[-16:])
+                code = decrypt_ctr(enc, self.key[0x19:0x29], code[-16:])
             else:
                 print("decoding mode 8...")
                 code = decrypt_buffer_basic_xor(enc, self.key[0x32:0x4a])
         else:
             if flags & 0x2000000:
                 print("decoding mode 9...")
-                code = decrypt_buffer_block(enc[:-16], self.key[0x32:0x4a], code[-16:], False)
+                code = decrypt_buffer_block(enc, self.key[0x32:0x4a], code[-16:], False)
             else:
                 print("decoding mode 10...")
                 code = decrypt_des(enc, self.key[0x19:0x31], self.iv, False)
