@@ -286,7 +286,6 @@ class CodeFixerSuper():
         real_co_consts = co_consts[co_consts_idx]
         consts = []
         # decode sub-functions
-        code_idx = 0 # jank af
         for i in range(len(real_co_consts)):
             const = real_co_consts[i]
             if isinstance(const, type(co)):
@@ -297,7 +296,6 @@ class CodeFixerSuper():
                     print("fixing <unknown>...")
                 
                 const = self.deobfusc_codeobj(const, co_consts)
-                code_idx += 1
             
             consts.append(const)
         
