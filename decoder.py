@@ -146,6 +146,9 @@ class Decoder():
     
     def decompile_pyc(self, path):
         try:
-            os.system("pycdc " + path)
+            if os.name == "nt":
+                os.system("pycdc " + path)
+            else:
+                os.system("./pycdc " + path)
         except:
             print("oof, decompile error")

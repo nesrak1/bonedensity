@@ -1,5 +1,6 @@
 from util import read_mem_u32, write_mem_u32
-from Crypto.Cipher import DES3
+from Crypto.Cipher import DES3, AES
+from Crypto.Util import Counter
 import subprocess
 import base64
 
@@ -133,16 +134,8 @@ def decrypt_ctr(data, key, armor_key):
     write_mem_u32(key4_mem, 0x08, key4_c)
     write_mem_u32(key4_mem, 0x0c, key4_d)
 
-    # temporary measure until I can figure out pycryptodome's AES CTR dealio
-    data_b64 = base64.b64encode(bytes(data)).decode("utf-8")
-    key_b64 = base64.b64encode(bytes(key4_mem)).decode("utf-8")
-    iv_b64 = base64.b64encode(bytes(armor_key)).decode("utf-8")
-    out_b64 = subprocess.check_output(["tomcrypt_ctr", data_b64, key_b64, iv_b64, str(len(data)), str(len(key4_mem)), str(len(armor_key))])
-    new_data = base64.b64decode(out_b64)
-
-    #cntr = Counter(64, b"", b"", int.from_bytes(armor_key, "big"))
-    #cntr = Counter.new(nbits=128, initial_value=int.from_bytes(bytes(armor_key), "little"), little_endian=True)
-    #cipher = AES.new(bytes(key4_mem), AES.MODE_CTR, counter=cntr)
-    #new_data = cipher.decrypt(data)
+    cntr = Counter.new(nbits=128, initial_value=int.from_bytes(bytes(armor_key), "little"), little_endian=True)
+    cipher = AES.new(bytes(key4_mem), AES.MODE_CTR, counter=cntr)
+    new_data = cipher.decrypt(data)
 
     return new_data
