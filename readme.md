@@ -15,19 +15,12 @@ python bd.py encrypted_file.pyc pytransform.pyd
 Use the pytransform.pyd file if you have it,
 otherwise, use the _pytransform.dll version.
 
-5. Pycdc will attempt to decompile. It's not very good (especially since it doesn't really support new versions of Python), so you may want to use pycdas instead on the `.pyc.fix.pyc` file. You can try uncompyle6/decompyle3 but so far in testing, none of them have decompiled with those two.
+5. Pycdc will attempt to decompile. If you're not on Windows, you'll need to build this yourself. It's not very good (especially since it doesn't really support new versions of Python), so you may want to use pycdas instead on the `.pyc.fix.pyc` file. You can try uncompyle6/decompyle3, but so far in testing, none of them have decompiled with those two.
 
-Note: only windows dlls/pyds are supported right now.
+Note: only Windows dlls/pyds are supported right now.
 
-If you're on Linux, you'll need to compile tomcrypt_ctr (normal mode only).
-This is temporary measure since pycryptodome wasn't working.
-The source for tomcrypt_ctr is in tomcrypt_ctr.c (obviously).
+Projects/libraries used:
 
-Libraries:
-
+* Pycryptodome: https://github.com/Legrandin/pycryptodome/
 * Pycdc: https://github.com/zrax/pycdc
-* tomcrypt: https://github.com/libtom/libtomcrypt
-
-Some extra code from:
-
 * unpyarmor: https://github.com/nlscc/unpyarmor
