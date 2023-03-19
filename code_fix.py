@@ -248,8 +248,16 @@ class CodeFixerSuper():
         return bytes(code)
 
     def decrypt_code_armor_wrap(self, code, flags):
-        armor_wrap_co_code = code[16:]
-        armor_wrap_key = code[-16:]
+        if code[0] == 116:
+            armor_wrap_co_code = code[16:]
+            armor_wrap_key = code[-16:]
+        elif code[0] == 144:
+            # EXTENDED_ARG
+            armor_wrap_addr = code[1] << 8 | code[3]
+            armor_wrap_co_code = code[8:armor_wrap_addr]
+            armor_wrap_key = code[-16:]
+        else:
+            raise Exception("unknown code start")
         
         if flags & 0x8000000:
             if flags & 0x2000000:
